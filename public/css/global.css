@@ -2500,3 +2500,25 @@ input[type="reset"],
 input[type="button"] {
   padding: 16px 20px;
 }
+
+/*************************** 404 Error ***************************/
+
+.desk {
+  width: 80%;
+  color: #727C85;
+  margin: auto;
+  text-align: center;
+}
+
+.desk h1 {
+  font-weight: 400;
+}
+
+.desk-items {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}

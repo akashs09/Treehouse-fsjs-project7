@@ -31,17 +31,17 @@ app.get('/', (request, response) => {
   response.render('everything', {globalObj});
 });
 
-app.get('/test', (request, response) => {
-  // response.render('test', {globalObj});
-});
 
 app.post('/', (request,response) => {
   const tweet = {status: ''};
   tweet.status = request.body.tweet;
   tweeting(tweet);
   setTimeout(refresh, 3000);
-
-response.render('everything', {globalObj});
+/*
+The data from the json REST API returns  with newest tweet but not sure why when i call to refresh it does not update client Interface
+*/
+// response.render('everything', {globalObj});
+response.redirect('/');
 });
 function tweeting(tweet){
   console.log(`tweet post: ${tweet.status}`);
@@ -51,8 +51,12 @@ function refresh(){
   T.get('statuses/user_timeline', recent_tweet_params, recentTweetData);
 }
 function recentTweetData(err, data, response){
+  if (err) {
+    console.log("Not connected to internet");
+  }
+  else {
   let recent_tweets = data;
-  // console.log(recent_tweets);
+  // console.log(recent_tweets[0].text);
   globalObj.screen_name = recent_tweets[0].user.screen_name;
   globalObj.profile_pic = recent_tweets[0].user.profile_image_url_https;
   globalObj.background_image = recent_tweets[0].user.profile_banner_url;
@@ -71,6 +75,7 @@ function recentTweetData(err, data, response){
     });
   }
 }
+}
 
 function getHours(date){
   const d = new Date();
@@ -85,6 +90,7 @@ const recent_followers_params = {
 }
 
 function recentFollowersData(err, data, response){
+
   let recent_followers = data;
 
   for (let i = 0; i < recent_followers.users.length; i++){
@@ -106,7 +112,17 @@ function recentDirectMessages(err, data, response){
     });
   }
 }
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
+app.use((err, req, res, next) => {
+  res.locals.error = err;
+  res.status(err.status);
+  res.render('error',{globalObj});
+});
 
 app.listen(3000, () => {
     console.log('The application is running on localhost:3000!')
