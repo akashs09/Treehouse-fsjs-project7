@@ -1,0 +1,18 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "Twitter Web Interface",
+  "main": "./js/app.js",
+  "scripts": {
+    "start": "node ./js/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Akash Sharma",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.15.2",
+    "pug": "^2.0.0-rc.1",
+    "twit": "^2.2.9"
+  }
+}
