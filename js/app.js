@@ -21,7 +21,7 @@ T.get('friends/list',recent_tweet_params,recentFollowersData);
 T.get('direct_messages/sent',{count: 5},recentDirectMessages);
 
 
-const globalObj = {
+let globalObj = {
   tweets:[],
   followers:[],
   directMessages:[]
@@ -35,20 +35,19 @@ app.get('/', (request, response) => {
 app.post('/', (request,response) => {
   const tweet = {status: ''};
   tweet.status = request.body.tweet;
-  tweeting(tweet);
-  setTimeout(refresh, 3000);
-/*
-The data from the json REST API returns  with newest tweet but not sure why when i call to refresh it does not update client Interface
-*/
-// response.render('everything', {globalObj});
-response.redirect('/');
+  tweeting(tweet).then(function() {
+    refresh().then(function() {
+      response.redirect('/');
+    });
+  });
+
 });
 function tweeting(tweet){
-  console.log(`tweet post: ${tweet.status}`);
-  T.post('statuses/update', tweet);
+  return T.post('statuses/update', tweet);
 };
 function refresh(){
-  T.get('statuses/user_timeline', recent_tweet_params, recentTweetData);
+  return T.get('statuses/user_timeline', recent_tweet_params, recentTweetData);
+
 }
 function recentTweetData(err, data, response){
   if (err) {
@@ -56,7 +55,7 @@ function recentTweetData(err, data, response){
   }
   else {
   let recent_tweets = data;
-  // console.log(recent_tweets[0].text);
+  globalObj.tweets = [];
   globalObj.screen_name = recent_tweets[0].user.screen_name;
   globalObj.profile_pic = recent_tweets[0].user.profile_image_url_https;
   globalObj.background_image = recent_tweets[0].user.profile_banner_url;
@@ -66,7 +65,6 @@ function recentTweetData(err, data, response){
 
 
   for (let i = 0; i < recent_tweets.length; i++){
-    // console.log(`${i+1}: ${recent_tweets[i].text}`);
     globalObj.tweets.push({
       message: recent_tweets[i].text,
       datetweeted: getHours(recent_tweets[i].created_at),
@@ -74,6 +72,8 @@ function recentTweetData(err, data, response){
       num_of_retweets: recent_tweets[i].retweet_count
     });
   }
+
+  return Promise.resolve();
 }
 }
 
@@ -91,26 +91,35 @@ const recent_followers_params = {
 
 function recentFollowersData(err, data, response){
 
-  let recent_followers = data;
+  if (err) {
+    console.error(err);
+  } else {
 
-  for (let i = 0; i < recent_followers.users.length; i++){
-    globalObj.followers.push({
-      follower_name: recent_followers.users[i].name,
-      follower_screen_name: recent_followers.users[i].screen_name,
-      follower_image_url: recent_followers.users[i].profile_image_url_https
-    });
+    let recent_followers = data;
+
+    for (let i = 0; i < recent_followers.users.length; i++){
+      globalObj.followers.push({
+        follower_name: recent_followers.users[i].name,
+        follower_screen_name: recent_followers.users[i].screen_name,
+        follower_image_url: recent_followers.users[i].profile_image_url_https
+      });
+    }
   }
 }
 
 function recentDirectMessages(err, data, response){
-  let recent_direct_messages = data;
-  // console.log(recent_direct_messages);
-  for (let i = 0; i < recent_direct_messages.length; i++){
-    globalObj.directMessages.push({
-      direct_message: recent_direct_messages[i].text,
-      created: getHours(recent_direct_messages[i].created_at)
-    });
+  if (err) {
+    console.error(err);
+  } else {
+      let recent_direct_messages = data;
+      for (let i = 0; i < recent_direct_messages.length; i++){
+        globalObj.directMessages.push({
+          direct_message: recent_direct_messages[i].text,
+          created: getHours(recent_direct_messages[i].created_at)
+        });
+      }
   }
+
 }
 app.use((req, res, next) => {
   const err = new Error('Not Found');
