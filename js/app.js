@@ -12,13 +12,11 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/static', express.static('public'));
 app.set('view engine', 'pug');
 
-const recent_tweet_params = {
-  screen_name: 'sharma_000',
-  count: 5
-};
-T.get('statuses/user_timeline', recent_tweet_params, recentTweetData);
-T.get('friends/list',recent_tweet_params,recentFollowersData);
+
+T.get('statuses/user_timeline', {count: 5}, recentTweetData);
+T.get('friends/list',{count: 5},recentFollowersData);
 T.get('direct_messages/sent',{count: 5},recentDirectMessages);
+
 
 
 let globalObj = {
