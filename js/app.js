@@ -17,7 +17,7 @@ app.set('view engine', 'pug');
 
 let background_image = '';
 let screen_name = '';
-
+let vm = {};
 function getHours(date){
   const d = new Date();
   const f = new Date(date);
@@ -51,7 +51,7 @@ const getRecentDirectMessages=(req,res,next)=>{
 }
 
 app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (req, res, next) => {
-  let vm = { tweets:req.tweets, friends:req.followers.users, dms:req.Dms };
+  vm = { tweets:req.tweets, friends:req.followers.users, dms:req.Dms };
   vm.screen_name=vm.tweets[0].user.screen_name;
   vm.background_image=vm.tweets[0].user.profile_banner_url;
   vm.profile_pic=vm.tweets[0].user.profile_image_url_https;
@@ -61,7 +61,7 @@ app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (
     vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
 
   }
-  console.log(req.Dms);
+  // console.log(req.Dms);
   vm.followers_count=vm.tweets[0].user.friends_count;
   background_image:vm.screen_name;
   screen_name:vm.background_image;
@@ -69,8 +69,28 @@ app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (
 });
 
 app.post('/', (req,res,next) => {
-  T.post('statuses/update', {status: req.body.tweet},(err,data,response) => err? next(err): res.redirect('/'));
-});
+  T.post('statuses/update', {status: req.body.tweet},(err,data,response) => {
+    err? next(err):
+      getRecentTweets;
+      getRecentFollowersData;
+      getRecentDirectMessages;
+      vm = { tweets:req.tweets, friends:req.followers.users, dms:req.Dms };
+      console.log(req.followers.users);
+      vm.screen_name=vm.tweets[0].user.screen_name;
+      vm.background_image=vm.tweets[0].user.profile_banner_url;
+      vm.profile_pic=vm.tweets[0].user.profile_image_url_https;
+      vm.name=vm.tweets[0].user.name;
+      // vm.date_tweeted=getHours(vm.tweets[0].user.created_at);
+      for (let i = 0; i < 5; i++) {
+        vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
+
+      }
+      // console.log(req.Dms);
+      vm.followers_count=vm.tweets[0].user.friends_count;
+      background_image:vm.screen_name;
+      screen_name:vm.background_image;
+      res.render('everything', vm);
+})});
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');
