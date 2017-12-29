@@ -71,15 +71,14 @@ app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (
 app.post('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages,(req,res,next) => {
   T.post('statuses/update', {status: req.body.tweet},(err,data,response) => {
     err? next(err):
-    T.get('statuses/user_timeline', {count: 5}, (err,tweets,response)=> {
-      vm.tweets=tweets;
-      for (let i = 0; i < vm.tweets.length; i++) {
-        vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
-      }
-      res.render('everything', vm);
-    });
- })
-});
+ //    T.get('statuses/user_timeline', {count: 5}, (err,tweets,response)=> {
+ //      vm.tweets=tweets;
+ //      for (let i = 0; i < vm.tweets.length; i++) {
+ //        vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
+ //      }
+      res.redirect('/');
+    })
+ });
 // app.post('/endpoint', (req, res) => {
 //   // var obj = {};
 // // console.log('body: ' + JSON.stringify(req.body));
@@ -109,7 +108,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   res.locals.error = err;
   res.status(err.status).render('error',{screen_name:screen_name,background_image:background_image});
-  // res.render('everything',vm);
+
 });
 
 app.listen(3000, () => console.log('The application is running on localhost:3000!'));
