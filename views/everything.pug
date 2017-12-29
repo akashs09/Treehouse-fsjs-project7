@@ -10,6 +10,7 @@ html(lang='en')
 
     link(href='https://fonts.googleapis.com/css?family=Work+Sans:400,600', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/static/css/global.css')
+
   body
     header.circle--header(style=`background-image: url(${background_image})`)
       .bounds
@@ -29,7 +30,7 @@ html(lang='en')
                 li
                   a Sign Out
     .app--tweet
-      form(action='/', method='post')
+      form(method='post')
         .circle--fluid
           .circle--fluid--cell.circle--fluid--primary.align-bottom.app--tweet--post
             .app--avatar(style=`background-image: url(${profile_pic})`)
@@ -97,7 +98,7 @@ html(lang='en')
                     .circle--fluid--cell.circle--fluid--primary
                       a.app--tweet--author
                         .app--avatar(style=`background-image: url(${friend.profile_image_url_https})`)
-                          img(src='/static/images/f-spore.png')
+                          // img(src='/static/images/f-spore.png')
                         h4= friend.name
                         p @#{friend.screen_name}
                     .circle--fluid--cell
@@ -111,8 +112,11 @@ html(lang='en')
                 a  #{name}
               ul.app--message--conversation
                 each dm in dms
-                  li.app-message
-                    .app-avatar(style=`background-image: url(${profile_pic})`)
-                    p.app-message-text
+                  li.app--message
+                    .app--avatar(style=`background-image: url(${dm.sender.profile_image_url_https})`)
+                      img(src='/static/images/m-spore.png')
+                    p.app--message--text
                       | #{dm.text}
-                    p.app-message-timestamp sent #{dm.created_at.substring(0,16)}
+                    p.app--message--timestamp sent #{dm.created_at.substring(0,16)}
+script(src='https://code.jquery.com/jquery-3.2.1.min.js', integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=', crossorigin='anonymous')
+script(src='/static/app.js')
