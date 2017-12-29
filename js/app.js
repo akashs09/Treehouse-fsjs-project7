@@ -57,7 +57,7 @@ app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (
   vm.profile_pic=vm.tweets[0].user.profile_image_url_https;
   vm.name=vm.tweets[0].user.name;
   // vm.date_tweeted=getHours(vm.tweets[0].user.created_at);
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < vm.tweets.length; i++) {
     vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
 
   }
@@ -68,29 +68,37 @@ app.get('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages, (
   res.render('everything', vm);
 });
 
-app.post('/', (req,res,next) => {
+app.post('/', getRecentTweets, getRecentFollowersData, getRecentDirectMessages,(req,res,next) => {
   T.post('statuses/update', {status: req.body.tweet},(err,data,response) => {
     err? next(err):
-      getRecentTweets;
-      getRecentFollowersData;
-      getRecentDirectMessages;
-      vm = { tweets:req.tweets, friends:req.followers.users, dms:req.Dms };
-      console.log(req.followers.users);
-      vm.screen_name=vm.tweets[0].user.screen_name;
-      vm.background_image=vm.tweets[0].user.profile_banner_url;
-      vm.profile_pic=vm.tweets[0].user.profile_image_url_https;
-      vm.name=vm.tweets[0].user.name;
-      // vm.date_tweeted=getHours(vm.tweets[0].user.created_at);
-      for (let i = 0; i < 5; i++) {
-        vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
-
-      }
-      // console.log(req.Dms);
-      vm.followers_count=vm.tweets[0].user.friends_count;
-      background_image:vm.screen_name;
-      screen_name:vm.background_image;
-      res.render('everything', vm);
-})});
+    T.get('statuses/user_timeline', {count: 5}, (err,tweets,response)=> {
+      vm.tweets=tweets;
+      for (let i = 0; i < vm.tweets.length; i++) {
+        vm.tweets[i].created_at=getHours(vm.tweets[i].created_at);
+      }
+      res.render('everything', vm);
+    });
+ })
+});
+// app.post('/endpoint', (req, res) => {
+//   // var obj = {};
+// // console.log('body: ' + JSON.stringify(req.body));
+// console.log(req.body);
+// res.send(req.body);
+//     // let T = new Twit(config);
+//     // T.post('statuses/update', { status: req.body.newTweet }, (err, data) => {
+//     //     if (err) return res.send(err);
+//     //     let tweetData = {};
+//     //     tweetData.picture = data.user.profile_image_url;
+//     //     tweetData.author = '<h4>' + data.user.name + '</h4> @' + data.user.screen_name;
+//     //     tweetData.date = new Date(data.created_at).toLocaleString();
+//     //     tweetData.like = data.favorite_count;
+//     //     tweetData.retweet = data.retweet_count;
+//     //     tweetData.message = data.text;
+//     //     res.send(tweetData);
+//     // });
+// });
+    // res.redirect('/');
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');
@@ -101,6 +109,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   res.locals.error = err;
   res.status(err.status).render('error',{screen_name:screen_name,background_image:background_image});
+  // res.render('everything',vm);
 });
 
 app.listen(3000, () => console.log('The application is running on localhost:3000!'));
