@@ -3,11 +3,15 @@ A Twitter Interface app showing last 5 tweets, friends and direct messages.
 ## Getting Started
 
 1. Install Depedencies
-  ..* From nodejs's terminal window enter `npm install`
-Exceeds:
-1. Need to post in real time without refreshing
-2. need to log errors when wifi connection is off
+  1a. From nodejs's terminal window enter `npm install`
+  
+2. Where does my api key go?
+ 2a. Need to supply api key from Twitter.
+ 2b. Create file `config.js` and add json formatted string of api key 
+ 
+3.
+  3a. Enter `npm start` in prject directory shell
+  3b. 
 
-Tidy-up:
-1. need to get rid of global variables
-2. make it DRY (limit calls to re-usuable functions)
+#### Exceeds Expectations
+1. Enabled post express command that is able to call the RestAPI of twitter to post tweets and refresh the page to show the resultant new tweet
